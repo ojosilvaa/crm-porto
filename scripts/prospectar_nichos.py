@@ -1,12 +1,12 @@
-"""
-Prospecção de 10 novos nichos — 20 leads sem website cada.
-Guarda progresso após cada nicho. Regenera CRM no final.
+﻿"""
+ProspecÃ§Ã£o de 10 novos nichos â€” 20 leads sem website cada.
+Guarda progresso apÃ³s cada nicho. Regenera CRM no final.
 """
 import requests, csv, json, re, time, sys, io, os
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
-API_KEY    = "AIzaSyDXbxVoQNe8AzT8aSbbmTyCQ6nzob5O-30"
+API_KEY    = "SUA_CHAVE_GOOGLE_PLACES_AQUI"
 SEARCH_URL = "https://places.googleapis.com/v1/places:searchText"
 CSV_NICHOS = "nichos_sem_website.csv"
 CSV_TODOS  = "prospeccao_porto_sem_website.csv"  # CSV original (3 categorias)
@@ -35,7 +35,7 @@ LOCATIONS = [
 
 FIELD_MASK = "places.id,places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.websiteUri,places.rating,places.userRatingCount"
 
-# ── API ───────────────────────────────────────────────────────────────────────
+# â”€â”€ API â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 def search(query, loc, page_token=None):
     headers = {"Content-Type":"application/json","X-Goog-Api-Key":API_KEY,"X-Goog-FieldMask":FIELD_MASK}
     body = {"textQuery":query,"languageCode":"pt","maxResultCount":20,
@@ -55,7 +55,7 @@ def extrair_cidade(end):
             return p
     return "Porto"
 
-# ── Recolher nicho ────────────────────────────────────────────────────────────
+# â”€â”€ Recolher nicho â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 def recolher_nicho(nicho):
     label = nicho["label"]
     print(f"\n[{label}]", end=" ", flush=True)
@@ -73,7 +73,7 @@ def recolher_nicho(nicho):
                     pid = p.get("id")
                     if pid and pid not in todos: todos[pid] = p
             sem = sum(1 for p in todos.values() if not p.get("websiteUri"))
-            sys.stdout.write(f"\r[{label}] {len(todos)} únicos | {sem} sem website")
+            sys.stdout.write(f"\r[{label}] {len(todos)} Ãºnicos | {sem} sem website")
             sys.stdout.flush()
             if sem >= OBJETIVO * 2: break
         if sum(1 for p in todos.values() if not p.get("websiteUri")) >= OBJETIVO * 2: break
@@ -97,10 +97,10 @@ def recolher_nicho(nicho):
 
     resultados.sort(key=lambda x: int(x["avaliacoes"]) if str(x["avaliacoes"]).isdigit() else 0)
     resultado_final = resultados[:OBJETIVO]
-    print(f" → {len(resultado_final)} leads guardados")
+    print(f" â†’ {len(resultado_final)} leads guardados")
     return resultado_final
 
-# ── CSV helpers ───────────────────────────────────────────────────────────────
+# â”€â”€ CSV helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 CAMPOS = ["nome","categoria","cidade","morada","telefone","rating","avaliacoes","tem_website","website_url"]
 
 def carregar_csv(path):
@@ -113,7 +113,7 @@ def guardar_csv(path, rows):
         w = csv.DictWriter(f, fieldnames=CAMPOS, extrasaction="ignore")
         w.writeheader(); w.writerows(rows)
 
-# ── CRM generator (inline, compacto) ─────────────────────────────────────────
+# â”€â”€ CRM generator (inline, compacto) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 def wa_num(tel):
     d = re.sub(r"\D","",tel)
     if d.startswith("351"): d=d[3:]
@@ -125,43 +125,43 @@ def gerar_pitch(row):
     except: aval=0
     try: rat=float(row["rating"])
     except: rat=0.0
-    if aval<5:     g=f"A {nome} ainda não tem avaliações suficientes no Google — sem website, é praticamente invisível online."
-    elif aval<20:  g=f"A {nome} tem {aval} avaliações no Google. Sem website, quem pesquisa online passa para a concorrência."
-    elif aval<60:  g=f"Com {aval} avaliações no Google, a {nome} tem boa reputação. Um website vai multiplicar a visibilidade."
-    else:           g=f"A {nome} tem {aval} avaliações — já é referência. Sem website está a perder clientes que pesquisam online."
+    if aval<5:     g=f"A {nome} ainda nÃ£o tem avaliaÃ§Ãµes suficientes no Google â€” sem website, Ã© praticamente invisÃ­vel online."
+    elif aval<20:  g=f"A {nome} tem {aval} avaliaÃ§Ãµes no Google. Sem website, quem pesquisa online passa para a concorrÃªncia."
+    elif aval<60:  g=f"Com {aval} avaliaÃ§Ãµes no Google, a {nome} tem boa reputaÃ§Ã£o. Um website vai multiplicar a visibilidade."
+    else:           g=f"A {nome} tem {aval} avaliaÃ§Ãµes â€” jÃ¡ Ã© referÃªncia. Sem website estÃ¡ a perder clientes que pesquisam online."
     extra=""
-    if rat>0 and rat<4.0: extra=f" Com rating de {rat}, um website com depoimentos vai melhorar a perceção da marca."
-    elif rat>=4.8: extra=f" Com {rat} de rating, têm um serviço excecional — um website vai mostrá-lo ao mundo."
+    if rat>0 and rat<4.0: extra=f" Com rating de {rat}, um website com depoimentos vai melhorar a perceÃ§Ã£o da marca."
+    elif rat>=4.8: extra=f" Com {rat} de rating, tÃªm um serviÃ§o excecional â€” um website vai mostrÃ¡-lo ao mundo."
     cats={
-        "Oficina Mecanica":        ("clientes","oficina mecânica","localização, serviços e marcação de revisões"),
-        "Fisioterapeuta":           ("pacientes","clínica de fisioterapia","serviços, equipa e marcações online"),
-        "Restaurante Tasca":        ("clientes","restaurante","menu, horários e reservas online"),
-        "Psicologo Terapeuta":      ("pacientes","psicólogo","apresentação, especialidades e contacto seguro"),
-        "Centro de Explicacoes":    ("alunos","centro de explicações","disciplinas, horários e inscrições online"),
-        "Padaria Pastelaria":       ("clientes","padaria/pastelaria","catálogo de produtos, horários e encomendas"),
-        "Advogado Solicitador":     ("clientes","escritório de advocacia","áreas de prática, equipa e contacto"),
-        "Empresa de Limpeza":       ("clientes","empresa de limpeza","serviços, preçário e pedido de orçamento"),
-        "Academia Artes Marciais":  ("alunos","academia","modalidades, horários e inscrições online"),
-        "Veterinario":              ("clientes","clínica veterinária","serviços, equipa e marcações online"),
+        "Oficina Mecanica":        ("clientes","oficina mecÃ¢nica","localizaÃ§Ã£o, serviÃ§os e marcaÃ§Ã£o de revisÃµes"),
+        "Fisioterapeuta":           ("pacientes","clÃ­nica de fisioterapia","serviÃ§os, equipa e marcaÃ§Ãµes online"),
+        "Restaurante Tasca":        ("clientes","restaurante","menu, horÃ¡rios e reservas online"),
+        "Psicologo Terapeuta":      ("pacientes","psicÃ³logo","apresentaÃ§Ã£o, especialidades e contacto seguro"),
+        "Centro de Explicacoes":    ("alunos","centro de explicaÃ§Ãµes","disciplinas, horÃ¡rios e inscriÃ§Ãµes online"),
+        "Padaria Pastelaria":       ("clientes","padaria/pastelaria","catÃ¡logo de produtos, horÃ¡rios e encomendas"),
+        "Advogado Solicitador":     ("clientes","escritÃ³rio de advocacia","Ã¡reas de prÃ¡tica, equipa e contacto"),
+        "Empresa de Limpeza":       ("clientes","empresa de limpeza","serviÃ§os, preÃ§Ã¡rio e pedido de orÃ§amento"),
+        "Academia Artes Marciais":  ("alunos","academia","modalidades, horÃ¡rios e inscriÃ§Ãµes online"),
+        "Veterinario":              ("clientes","clÃ­nica veterinÃ¡ria","serviÃ§os, equipa e marcaÃ§Ãµes online"),
     }
-    chamada,area,feat = cats.get(cat,("clientes","negócio","informações e contacto"))
+    chamada,area,feat = cats.get(cat,("clientes","negÃ³cio","informaÃ§Ãµes e contacto"))
     cidade = row.get("cidade","Porto").split(",")[0].strip()
     return {
-        "abertura": f"Boa tarde, estou a falar com o/a responsável pela {nome}?",
+        "abertura": f"Boa tarde, estou a falar com o/a responsÃ¡vel pela {nome}?",
         "gancho":   g+extra,
-        "proposta": f"Criaria um website profissional para a {nome} com {feat} — pronto em 2 semanas, com garantia.",
-        "cta":      "Posso enviar-lhe agora 3 exemplos de websites que fiz para negócios similares no Porto?",
-        "obj1":     f"'Tenho redes sociais' → 'O Google só mostra websites nas pesquisas de \"{area} em {cidade}\". São complementares.'",
-        "obj2":     "'É caro' → 'Investimento único, sem mensalidades. Recupera em 1-2 meses de novos clientes.'",
-        "obj3":     "'Não tenho tempo' → 'Eu trato de tudo. Preciso só de 30 min da sua parte.'",
-        "wa_msg":   f"Olá! Trabalho com {area}s no Porto a criar websites profissionais. Vi a {nome} no Google e gostaria de mostrar exemplos. Posso enviar?",
+        "proposta": f"Criaria um website profissional para a {nome} com {feat} â€” pronto em 2 semanas, com garantia.",
+        "cta":      "Posso enviar-lhe agora 3 exemplos de websites que fiz para negÃ³cios similares no Porto?",
+        "obj1":     f"'Tenho redes sociais' â†’ 'O Google sÃ³ mostra websites nas pesquisas de \"{area} em {cidade}\". SÃ£o complementares.'",
+        "obj2":     "'Ã‰ caro' â†’ 'Investimento Ãºnico, sem mensalidades. Recupera em 1-2 meses de novos clientes.'",
+        "obj3":     "'NÃ£o tenho tempo' â†’ 'Eu trato de tudo. Preciso sÃ³ de 30 min da sua parte.'",
+        "wa_msg":   f"OlÃ¡! Trabalho com {area}s no Porto a criar websites profissionais. Vi a {nome} no Google e gostaria de mostrar exemplos. Posso enviar?",
     }
 
 def stars(r):
     try:
         r=float(r); f=int(r); h=1 if r-f>=0.5 else 0
-        return "★"*f+("½"if h else "")+"☆"*(5-f-h)
-    except: return "☆☆☆☆☆"
+        return "â˜…"*f+("Â½"if h else "")+"â˜†"*(5-f-h)
+    except: return "â˜†â˜†â˜†â˜†â˜†"
 
 def badge_class(cat):
     m={"Oficina Mecanica":"#2a1a0d,#FF9A3C","Fisioterapeuta":"#0d2a2a,#4ECDC4",
@@ -191,7 +191,7 @@ def gerar_crm(leads):
 
     html = f"""<!DOCTYPE html><html lang="pt"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CRM Prospeção — Websites Porto</title>
+<title>CRM ProspeÃ§Ã£o â€” Websites Porto</title>
 <style>
 *{{box-sizing:border-box;margin:0;padding:0}}
 :root{{--bg:#0d0d0d;--bg2:#141414;--bg3:#1c1c1c;--bg4:#252525;--border:#2a2a2a;
@@ -266,7 +266,7 @@ body{{background:var(--bg);color:var(--text);font-family:'Segoe UI',sans-serif}}
 @media(max-width:600px){{.card-top{{flex-wrap:wrap}}.cacoes{{width:100%;justify-content:flex-end}}}}
 </style></head><body>
 <div class="hdr">
-  <div><h1>CRM Prospeção <span>Websites · Grande Porto</span></h1></div>
+  <div><h1>CRM ProspeÃ§Ã£o <span>Websites Â· Grande Porto</span></h1></div>
   <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
     <span id="hstat" style="font-size:.78rem;color:var(--muted)"></span>
     <button onclick="expNotas()" style="background:var(--bg3);border:1px solid var(--border);color:var(--muted);padding:5px 10px;border-radius:7px;cursor:pointer;font-size:.72rem">Exportar Notas</button>
@@ -323,9 +323,9 @@ function render(){{
 function tog(id){{document.getElementById('p'+id).classList.toggle('open')}}
 function setSt(id,v){{const s=ld();if(!s[id])s[id]={{}};s[id].st=v;sv(s);const el=document.querySelector('#c'+id+' .ssel');if(el)el.className='ssel s-'+v;render()}}
 function svNota(id){{const s=ld();if(!s[id])s[id]={{}};const t=document.getElementById('nt'+id);if(t)s[id].nota=t.value;sv(s)}}
-function cpWA(id){{const el=document.getElementById('wm'+id);const b=el.querySelector('.cbtn');navigator.clipboard.writeText(el.childNodes[0].textContent.trim()).then(()=>{{b.textContent='✓';setTimeout(()=>b.textContent='Copiar',2000)}})}}
-function expNotas(){{const s=ld();let t='CRM EXPORT '+new Date().toLocaleDateString('pt-PT')+'\\n\\n';L.forEach(l=>{{const d=s[l.id];if(!d||(!d.nota&&(!d.st||d.st==='novo')))return;t+=`[${{(d.st||'novo').toUpperCase()}}] ${{l.nome}} — ${{l.tel||'—'}}\\n`;if(d.nota)t+='Nota: '+d.nota+'\\n';t+='\\n'}});const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{{type:'text/plain'}}));a.download='crm_notas_'+new Date().toISOString().slice(0,10)+'.txt';a.click()}}
-// Lazy render — só 30 de cada vez
+function cpWA(id){{const el=document.getElementById('wm'+id);const b=el.querySelector('.cbtn');navigator.clipboard.writeText(el.childNodes[0].textContent.trim()).then(()=>{{b.textContent='âœ“';setTimeout(()=>b.textContent='Copiar',2000)}})}}
+function expNotas(){{const s=ld();let t='CRM EXPORT '+new Date().toLocaleDateString('pt-PT')+'\\n\\n';L.forEach(l=>{{const d=s[l.id];if(!d||(!d.nota&&(!d.st||d.st==='novo')))return;t+=`[${{(d.st||'novo').toUpperCase()}}] ${{l.nome}} â€” ${{l.tel||'â€”'}}\\n`;if(d.nota)t+='Nota: '+d.nota+'\\n';t+='\\n'}});const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{{type:'text/plain'}}));a.download='crm_notas_'+new Date().toISOString().slice(0,10)+'.txt';a.click()}}
+// Lazy render â€” sÃ³ 30 de cada vez
 let PAGE=30, page=0;
 function render(){{
   const s=ld(),q=(document.getElementById('srch').value||'').toLowerCase();
@@ -365,20 +365,20 @@ function renderPage(fl,s,reset){{
           <div class="csub">
             <span class="badge" style="${{l.badge}}">${{l.cat}}</span>
             <span class="badge bsw">Sem website</span>
-            <span class="caddr">📍 ${{l.morada||l.cidade}}</span>
+            <span class="caddr">ðŸ“ ${{l.morada||l.cidade}}</span>
             ${{l.rating?`<span class="cstars">${{l.stars}}</span><span class="caval">(${{l.aval}} aval.)</span>`:''}}
           </div>
         </div>
         <div class="cacoes" onclick="event.stopPropagation()">
           ${{tel}}${{wa}}
           <select class="ssel s-${{st}}" onchange="setSt(${{l.id}},this.value)">
-            <option value="novo" ${{st==='novo'?'selected':''}}>🔵 Novo</option>
-            <option value="contactado" ${{st==='contactado'?'selected':''}}>📞 Contactado</option>
-            <option value="interessado" ${{st==='interessado'?'selected':''}}>⭐ Interessado</option>
-            <option value="fechado" ${{st==='fechado'?'selected':''}}>✅ Fechado</option>
-            <option value="recusado" ${{st==='recusado'?'selected':''}}>❌ Recusado</option>
+            <option value="novo" ${{st==='novo'?'selected':''}}>ðŸ”µ Novo</option>
+            <option value="contactado" ${{st==='contactado'?'selected':''}}>ðŸ“ž Contactado</option>
+            <option value="interessado" ${{st==='interessado'?'selected':''}}>â­ Interessado</option>
+            <option value="fechado" ${{st==='fechado'?'selected':''}}>âœ… Fechado</option>
+            <option value="recusado" ${{st==='recusado'?'selected':''}}>âŒ Recusado</option>
           </select>
-          <button class="btn-p" onclick="tog(${{l.id}})">Pitch ▾</button>
+          <button class="btn-p" onclick="tog(${{l.id}})">Pitch â–¾</button>
         </div>
       </div>
       <div class="ppanel" id="p${{l.id}}">
@@ -386,7 +386,7 @@ function renderPage(fl,s,reset){{
         <div class="ps"><h4>2. Gancho</h4><div class="pb ga">${{l.pitch.gancho}}</div></div>
         <div class="ps"><h4>3. Proposta</h4><div class="pb pr">${{l.pitch.proposta}}</div></div>
         <div class="ps"><h4>4. Call to Action</h4><div class="pb ct">${{l.pitch.cta}}</div></div>
-        <div class="ps"><h4>5. Objeções</h4><div class="pb ob">${{l.pitch.obj1}}\\n${{l.pitch.obj2}}\\n${{l.pitch.obj3}}</div></div>
+        <div class="ps"><h4>5. ObjeÃ§Ãµes</h4><div class="pb ob">${{l.pitch.obj1}}\\n${{l.pitch.obj2}}\\n${{l.pitch.obj3}}</div></div>
         ${{l.wa?`<div class="ps"><h4>Mensagem WhatsApp</h4>
           <div class="wa-box" id="wm${{l.id}}">${{l.pitch.wa_msg}}<button class="cbtn" onclick="cpWA(${{l.id}})">Copiar</button></div>
           <a class="btn-wa" style="margin-top:8px;display:inline-flex" href="https://wa.me/${{l.wa}}?text=${{encodeURIComponent(l.pitch.wa_msg)}}" target="_blank">Abrir WhatsApp com mensagem</a>
@@ -400,7 +400,7 @@ function renderPage(fl,s,reset){{
     frag.appendChild(div);
   }});
   lista.appendChild(frag);
-  // botão "carregar mais"
+  // botÃ£o "carregar mais"
   const old=document.getElementById('load-more');
   if(old) old.remove();
   if((page+1)*PAGE < fl.length){{
@@ -429,7 +429,7 @@ function renderPage(fl,s,reset){{
     with open(CRM_HTML,"w",encoding="utf-8") as f: f.write(html)
     print(f"  CRM guardado: {CRM_HTML} ({len(data)} leads)")
 
-# ── MAIN ──────────────────────────────────────────────────────────────────────
+# â”€â”€ MAIN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 def main():
     # Carrega leads existentes (3 categorias originais)
     leads_existentes = carregar_csv(CSV_TODOS)
@@ -438,13 +438,13 @@ def main():
     # Carrega progresso anterior dos nichos
     nichos_feitos = carregar_csv(CSV_NICHOS)
     cats_feitas   = set(r["categoria"] for r in nichos_feitos)
-    print(f"Nichos já processados: {cats_feitas if cats_feitas else 'nenhum'}")
+    print(f"Nichos jÃ¡ processados: {cats_feitas if cats_feitas else 'nenhum'}")
 
     todos_leads = leads_existentes + nichos_feitos
 
     for nicho in NICHOS:
         if nicho["label"] in cats_feitas:
-            print(f"[{nicho['label']}] já feito — skip")
+            print(f"[{nicho['label']}] jÃ¡ feito â€” skip")
             continue
 
         novos = recolher_nicho(nicho)
@@ -452,10 +452,11 @@ def main():
         guardar_csv(CSV_NICHOS, nichos_feitos)  # guarda progresso
 
         todos_leads = leads_existentes + nichos_feitos
-        gerar_crm(todos_leads)  # actualiza CRM após cada nicho
+        gerar_crm(todos_leads)  # actualiza CRM apÃ³s cada nicho
         print(f"  Total acumulado: {len(todos_leads)} leads")
 
-    print(f"\nConcluído! {len(todos_leads)} leads totais no CRM.")
+    print(f"\nConcluÃ­do! {len(todos_leads)} leads totais no CRM.")
 
 if __name__ == "__main__":
     main()
+

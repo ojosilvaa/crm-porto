@@ -1,4 +1,4 @@
-import requests
+﻿import requests
 import csv
 import time
 import sys
@@ -7,11 +7,11 @@ import io
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
-API_KEY = "AIzaSyDXbxVoQNe8AzT8aSbbmTyCQ6nzob5O-30"
+API_KEY = "SUA_CHAVE_GOOGLE_PLACES_AQUI"
 SEARCH_URL = "https://places.googleapis.com/v1/places:searchText"
 OUTPUT_FILE = "prospeccao_porto_sem_website.csv"
 
-# Múltiplas queries por categoria para maximizar resultados
+# MÃºltiplas queries por categoria para maximizar resultados
 CATEGORIAS = [
     {
         "label": "Clinica Dentaria",
@@ -122,23 +122,23 @@ def recolher_sem_website(categoria, objetivo=40):
     for query in categoria["queries"]:
         for loc in LOCATIONS:
             next_token = None
-            for _ in range(2):  # até 2 páginas por query+localização
+            for _ in range(2):  # atÃ© 2 pÃ¡ginas por query+localizaÃ§Ã£o
                 places, next_token = search(query, loc, next_token)
                 for p in places:
                     pid = p.get("id")
                     if pid and pid not in todos_lugares:
                         todos_lugares[pid] = p
                 total_pesquisas += 1
-                sys.stdout.write(f"\r  Pesquisas: {total_pesquisas} | Locais únicos: {len(todos_lugares)}")
+                sys.stdout.write(f"\r  Pesquisas: {total_pesquisas} | Locais Ãºnicos: {len(todos_lugares)}")
                 sys.stdout.flush()
                 if not next_token:
                     break
                 time.sleep(1.5)
 
             if len([p for p in todos_lugares.values() if not p.get("websiteUri")]) >= objetivo * 2:
-                break  # já temos mais do que suficiente sem website
+                break  # jÃ¡ temos mais do que suficiente sem website
 
-    print(f"\n  Total único recolhido: {len(todos_lugares)} locais")
+    print(f"\n  Total Ãºnico recolhido: {len(todos_lugares)} locais")
 
     # Filtrar apenas sem website
     sem_website = []
@@ -167,7 +167,7 @@ def recolher_sem_website(categoria, objetivo=40):
             "_prioridade": prioridade(avaliacoes, rating),
         })
 
-    # Ordenar por prioridade (menos avaliações e rating mais baixo = mais fácil de fechar)
+    # Ordenar por prioridade (menos avaliaÃ§Ãµes e rating mais baixo = mais fÃ¡cil de fechar)
     sem_website.sort(key=lambda x: -x["_prioridade"])
     resultado = sem_website[:objetivo]
     print(f"  Sem website encontrados: {len(sem_website)} | A usar: {len(resultado)}")
@@ -200,3 +200,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

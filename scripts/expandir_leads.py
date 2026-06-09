@@ -1,8 +1,8 @@
-"""Expansão para 1000+ leads — mínimo de código, máximo de resultados."""
+﻿"""ExpansÃ£o para 1000+ leads â€” mÃ­nimo de cÃ³digo, mÃ¡ximo de resultados."""
 import requests,csv,json,re,time,os,sys,io
 sys.stdout=io.TextIOWrapper(sys.stdout.buffer,encoding='utf-8',errors='replace')
 
-API_KEY="AIzaSyDXbxVoQNe8AzT8aSbbmTyCQ6nzob5O-30"
+API_KEY="SUA_CHAVE_GOOGLE_PLACES_AQUI"
 SEARCH_URL="https://places.googleapis.com/v1/places:searchText"
 CSV1="prospeccao_porto_sem_website.csv"   # originais (104)
 CSV2="nichos_sem_website.csv"              # nichos porto (166)
@@ -12,7 +12,7 @@ CAMPOS=["nome","categoria","cidade","morada","telefone","rating","avaliacoes","t
 OBJETIVO=20
 FM="places.id,places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.websiteUri,places.rating,places.userRatingCount"
 
-# ── Cidades novas ─────────────────────────────────────────────────────────────
+# â”€â”€ Cidades novas â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 CIDADES={
     "Braga":     {"lat":41.5454,"lon":-8.4265,"r":10000},
     "Lisboa":    {"lat":38.7223,"lon":-9.1393,"r":12000},
@@ -26,7 +26,7 @@ CIDADES={
     "Viana":     {"lat":41.6936,"lon":-8.8338,"r":7000},
 }
 
-# ── Nichos existentes × novas cidades ────────────────────────────────────────
+# â”€â”€ Nichos existentes Ã— novas cidades â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 NICHOS_BASE={
     "Cabeleireiro":    ["salao cabeleireiro","cabeleireiro hairstylist"],
     "Estetica":        ["centro estetica beleza","estetica avancada"],
@@ -43,7 +43,7 @@ NICHOS_BASE={
     "Psicologo":       ["psicologo terapeuta","psicologa clinica"],
 }
 
-# ── Novos nichos (Porto + todas as cidades) ───────────────────────────────────
+# â”€â”€ Novos nichos (Porto + todas as cidades) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 NOVOS_NICHOS=[
     {"label":"Escola Conducao",     "q":["escola de conducao autoescola","autoescola"]},
     {"label":"Creche ATL",          "q":["creche infantil","ATL jardim infancia"]},
@@ -65,7 +65,7 @@ NOVOS_NICHOS=[
 # Limpa entradas malformadas (o dict duplo acima)
 NOVOS_NICHOS=[n for n in NOVOS_NICHOS if isinstance(n.get("q"),list)]
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
+# â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 def search(q,lat,lon,r,tok=None):
     h={"Content-Type":"application/json","X-Goog-Api-Key":API_KEY,"X-Goog-FieldMask":FM}
     b={"textQuery":q,"languageCode":"pt","maxResultCount":20,
@@ -122,7 +122,7 @@ def fetch_sem_website(queries,lat,lon,r,objetivo=OBJETIVO):
     rows.sort(key=lambda x:int(x["avaliacoes"]) if str(x["avaliacoes"]).isdigit() else 0)
     return rows[:objetivo]
 
-# ── CRM (compacto, lazy) ──────────────────────────────────────────────────────
+# â”€â”€ CRM (compacto, lazy) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 BADGE={
     "Cabeleireiro":"background:#1a2a1a;color:#5DCA9A","Estetica":"background:#2a1a3a;color:#A78BFA",
     "Dentaria":"background:#1a2a3a;color:#4A9EFF","Oficina":"background:#2a1a0d;color:#FF9A3C",
@@ -154,7 +154,7 @@ def wa(tel):
 def st(r):
     try:
         r=float(r); f=int(r); h=1 if r-f>=0.5 else 0
-        return "★"*f+("½"if h else "")+"☆"*(5-f-h)
+        return "â˜…"*f+("Â½"if h else "")+"â˜†"*(5-f-h)
     except: return ""
 
 def gpitch(row):
@@ -163,19 +163,19 @@ def gpitch(row):
     except: av=0
     try: rt=float(row["rating"])
     except: rt=0.0
-    if av<5: g=f"A {n} ainda não tem avaliações no Google — sem website é invisível online."
-    elif av<20: g=f"A {n} tem {av} avaliações. Sem website, quem pesquisa passa para a concorrência."
-    elif av<60: g=f"Com {av} avaliações, a {n} tem reputação. Um website vai multiplicar a visibilidade."
-    else: g=f"A {n} tem {av} avaliações. Sem website perde clientes que pesquisam online."
+    if av<5: g=f"A {n} ainda nÃ£o tem avaliaÃ§Ãµes no Google â€” sem website Ã© invisÃ­vel online."
+    elif av<20: g=f"A {n} tem {av} avaliaÃ§Ãµes. Sem website, quem pesquisa passa para a concorrÃªncia."
+    elif av<60: g=f"Com {av} avaliaÃ§Ãµes, a {n} tem reputaÃ§Ã£o. Um website vai multiplicar a visibilidade."
+    else: g=f"A {n} tem {av} avaliaÃ§Ãµes. Sem website perde clientes que pesquisam online."
     ex=""
-    if rt>0 and rt<4.0: ex=f" Com {rt} de rating, um website com depoimentos vai melhorar a perceção."
-    elif rt>=4.8: ex=f" Com {rt}★ — um website mostra esse excelente serviço ao mundo."
-    return {"ab":f"Boa tarde, falo com o/a responsável pela {n}?",
+    if rt>0 and rt<4.0: ex=f" Com {rt} de rating, um website com depoimentos vai melhorar a perceÃ§Ã£o."
+    elif rt>=4.8: ex=f" Com {rt}â˜… â€” um website mostra esse excelente serviÃ§o ao mundo."
+    return {"ab":f"Boa tarde, falo com o/a responsÃ¡vel pela {n}?",
             "ga":g+ex,
-            "pr":f"Criaria um website profissional para a {n} com marcações, serviços e localização — pronto em 2 semanas.",
-            "ct":f"Posso enviar-lhe agora 3 exemplos de websites que fiz para negócios em {c}?",
-            "ob":f"'Tenho redes' → 'Google só mostra websites nas pesquisas locais.'\\n'É caro' → 'Recupera em 1-2 meses de novos clientes.'\\n'Sem tempo' → 'Eu trato de tudo — só preciso 30 min da sua parte.'",
-            "wa":f"Olá! Crio websites profissionais para negócios em {c}. Vi a {n} no Google — gostaria de mostrar exemplos. Posso enviar?"}
+            "pr":f"Criaria um website profissional para a {n} com marcaÃ§Ãµes, serviÃ§os e localizaÃ§Ã£o â€” pronto em 2 semanas.",
+            "ct":f"Posso enviar-lhe agora 3 exemplos de websites que fiz para negÃ³cios em {c}?",
+            "ob":f"'Tenho redes' â†’ 'Google sÃ³ mostra websites nas pesquisas locais.'\\n'Ã‰ caro' â†’ 'Recupera em 1-2 meses de novos clientes.'\\n'Sem tempo' â†’ 'Eu trato de tudo â€” sÃ³ preciso 30 min da sua parte.'",
+            "wa":f"OlÃ¡! Crio websites profissionais para negÃ³cios em {c}. Vi a {n} no Google â€” gostaria de mostrar exemplos. Posso enviar?"}
 
 def gerar_crm(todos):
     cats=sorted(set(r.get("categoria","") for r in todos))
@@ -192,7 +192,7 @@ def gerar_crm(todos):
     js=json.dumps(data,ensure_ascii=False)
     html="""<!DOCTYPE html><html lang="pt"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CRM Prospeção Portugal</title>
+<title>CRM ProspeÃ§Ã£o Portugal</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#0d0d0d;--bg2:#141414;--bg3:#1c1c1c;--bg4:#252525;--bo:#2a2a2a;--go:#C8A96E;--gr:#5DCA9A;--re:#e05555;--bl:#4A9EFF;--tx:#f0f0f0;--mu:#666}
@@ -248,7 +248,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',sans-serif}
 .lm{display:block;margin:14px auto;background:var(--bg3);border:1px solid var(--bo);color:var(--go);padding:9px 20px;border-radius:7px;cursor:pointer;font-size:.82rem;width:100%;text-align:center}
 .lm:hover{background:var(--go);color:#000}
 </style></head><body>
-<div class="h"><div><h1>CRM Prospeção<span>Websites · Portugal</span></h1></div>
+<div class="h"><div><h1>CRM ProspeÃ§Ã£o<span>Websites Â· Portugal</span></h1></div>
   <div style="margin-left:auto;display:flex;gap:7px;align-items:center">
     <span id="hs" style="font-size:.75rem;color:var(--mu)"></span>
     <button onclick="expN()" style="background:var(--bg3);border:1px solid var(--bo);color:var(--mu);padding:4px 9px;border-radius:6px;cursor:pointer;font-size:.7rem">Exportar</button>
@@ -313,20 +313,20 @@ function rp(){
         <div class="cx">
           <span class="ba" style="${l.bg}">${l.cat}</span>
           <span class="ba bsw">Sem website</span>
-          <span class="cad">📍 ${l.morada||l.cidade}</span>
+          <span class="cad">ðŸ“ ${l.morada||l.cidade}</span>
           ${l.r?`<span style="color:var(--go);font-size:.7rem">${l.st}</span><span style="color:var(--mu);font-size:.67rem">(${l.av} aval.)</span>`:''}
         </div>
       </div>
       <div class="cac" onclick="event.stopPropagation()">
         ${tb}${wb}
         <select class="ss2 s-${st}" onchange="sst(${l.id},this.value)">
-          <option value="novo" ${st==='novo'?'selected':''}>🔵 Novo</option>
-          <option value="contactado" ${st==='contactado'?'selected':''}>📞 Contactado</option>
-          <option value="interessado" ${st==='interessado'?'selected':''}>⭐ Interessado</option>
-          <option value="fechado" ${st==='fechado'?'selected':''}>✅ Fechado</option>
-          <option value="recusado" ${st==='recusado'?'selected':''}>❌ Recusado</option>
+          <option value="novo" ${st==='novo'?'selected':''}>ðŸ”µ Novo</option>
+          <option value="contactado" ${st==='contactado'?'selected':''}>ðŸ“ž Contactado</option>
+          <option value="interessado" ${st==='interessado'?'selected':''}>â­ Interessado</option>
+          <option value="fechado" ${st==='fechado'?'selected':''}>âœ… Fechado</option>
+          <option value="recusado" ${st==='recusado'?'selected':''}>âŒ Recusado</option>
         </select>
-        <button class="bp" onclick="tog(${l.id})">Pitch ▾</button>
+        <button class="bp" onclick="tog(${l.id})">Pitch â–¾</button>
       </div>
     </div>
     <div class="pp" id="pp${l.id}">
@@ -334,7 +334,7 @@ function rp(){
       <div class="ps"><h4>Gancho</h4><div class="pb g">${l.p.ga}</div></div>
       <div class="ps"><h4>Proposta</h4><div class="pb p">${l.p.pr}</div></div>
       <div class="ps"><h4>Call to Action</h4><div class="pb c">${l.p.ct}</div></div>
-      <div class="ps"><h4>Objeções</h4><div class="pb o">${l.p.ob}</div></div>
+      <div class="ps"><h4>ObjeÃ§Ãµes</h4><div class="pb o">${l.p.ob}</div></div>
       ${l.wa?`<div class="ps"><h4>WhatsApp</h4>
         <div class="wb" id="wm${l.id}">${l.p.wa}<button class="cb" onclick="cpw(${l.id})">Copiar</button></div>
         <a class="wa" style="margin-top:6px;display:inline-flex" href="https://wa.me/${l.wa}?text=${encodeURIComponent(l.p.wa)}" target="_blank">Abrir WA</a></div>`:''}
@@ -359,10 +359,10 @@ function sst(id,v){const s=ld();if(!s[id])s[id]={};s[id].st=v;sv(s);
   document.getElementById('si2').textContent=c.interessado;document.getElementById('sf2').textContent=c.fechado}
 function svn(id){const s=ld();if(!s[id])s[id]={};const t=document.getElementById('nt'+id);if(t)s[id].nota=t.value;sv(s)}
 function cpw(id){const el=document.getElementById('wm'+id);const b=el.querySelector('.cb');
-  navigator.clipboard.writeText(el.childNodes[0].textContent.trim()).then(()=>{b.textContent='✓';setTimeout(()=>b.textContent='Copiar',2000)})}
+  navigator.clipboard.writeText(el.childNodes[0].textContent.trim()).then(()=>{b.textContent='âœ“';setTimeout(()=>b.textContent='Copiar',2000)})}
 function expN(){const s=ld();let t='CRM '+new Date().toLocaleDateString('pt-PT')+'\\n\\n';
   L.forEach(l=>{const d=s[l.id];if(!d||(!d.nota&&(!d.st||d.st==='novo')))return;
-    t+=`[${(d.st||'novo').toUpperCase()}] ${l.nome} (${l.cidade}) — ${l.tel||'—'}\\n`;
+    t+=`[${(d.st||'novo').toUpperCase()}] ${l.nome} (${l.cidade}) â€” ${l.tel||'â€”'}\\n`;
     if(d.nota)t+='Nota: '+d.nota+'\\n';t+='\\n'});
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/plain'}));
   a.download='crm_notas_'+new Date().toISOString().slice(0,10)+'.txt';a.click()}
@@ -370,20 +370,20 @@ rnd();
 </script></body></html>"""
     with open(CRM_HTML,"w",encoding="utf-8") as f: f.write(html)
 
-# ── MAIN ──────────────────────────────────────────────────────────────────────
+# â”€â”€ MAIN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 def main():
     base1=load(CSV1); base2=load(CSV2); expansao=load(CSV3)
     feitos=set(r["categoria"] for r in expansao)
-    print(f"Base: {len(base1)+len(base2)} | Expansão já feita: {len(expansao)} ({len(feitos)} nichos)")
+    print(f"Base: {len(base1)+len(base2)} | ExpansÃ£o jÃ¡ feita: {len(expansao)} ({len(feitos)} nichos)")
 
     tarefas=[]
-    # Nichos base × novas cidades
+    # Nichos base Ã— novas cidades
     for label,queries in NICHOS_BASE.items():
         for cname,cloc in CIDADES.items():
             key=f"{label}-{cname}"
             if key not in feitos:
                 tarefas.append({"key":key,"queries":[f"{q} {cname}" for q in queries],"loc":cloc})
-    # Novos nichos × Porto + todas as cidades
+    # Novos nichos Ã— Porto + todas as cidades
     porto={"lat":41.1579,"lon":-8.6291,"r":12000}
     todas={"Porto":porto,**CIDADES}
     for nicho in NOVOS_NICHOS:
@@ -419,3 +419,4 @@ def main():
 
 if __name__=="__main__":
     main()
+

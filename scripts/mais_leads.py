@@ -1,8 +1,8 @@
-"""mais_leads.py — Adiciona ~200 leads novos ao porto_leads.csv."""
+﻿"""mais_leads.py â€” Adiciona ~200 leads novos ao porto_leads.csv."""
 import requests, csv, json, re, time, os, sys, io
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
-API_KEY = "AIzaSyDXbxVoQNe8AzT8aSbbmTyCQ6nzob5O-30"
+API_KEY = "SUA_CHAVE_GOOGLE_PLACES_AQUI"
 SEARCH_URL = "https://places.googleapis.com/v1/places:searchText"
 CSV_OUT = "porto_leads.csv"
 FM = "places.id,places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.websiteUri,places.rating,places.userRatingCount"
@@ -18,7 +18,7 @@ ZONAS = [
     {"nome": "Espinho",       "lat": 41.0100, "lon": -8.6400, "r": 5000},
 ]
 
-# Nichos novos + queries alternativas para nichos existentes com baixo número
+# Nichos novos + queries alternativas para nichos existentes com baixo nÃºmero
 NOVOS_NICHOS = [
     {"label": "Veterinario",         "q": ["clinica veterinaria gatos caes", "veterinario animais domesticos", "hospital veterinario porto"]},
     {"label": "Psicologo",           "q": ["psicologo consultas", "psicologa clinica terapia", "psicologia clinica consultorio"]},
@@ -40,12 +40,12 @@ CIDADE_MAPA = {
     "Porto": "Porto", "Vila Nova de Gaia": "Vila Nova de Gaia", "Gaia": "Vila Nova de Gaia",
     "Matosinhos": "Matosinhos", "Maia": "Maia", "Gondomar": "Gondomar",
     "Valongo": "Valongo", "Espinho": "Espinho", "Ermesinde": "Valongo",
-    "Pedrouços": "Maia", "Águas Santas": "Maia", "Moreira": "Maia",
-    "Figueiredo": "Gondomar", "Fânzeres": "Gondomar", "Rio Tinto": "Gondomar",
-    "Leça da Palmeira": "Matosinhos", "Leça do Balio": "Matosinhos",
+    "PedrouÃ§os": "Maia", "Ãguas Santas": "Maia", "Moreira": "Maia",
+    "Figueiredo": "Gondomar", "FÃ¢nzeres": "Gondomar", "Rio Tinto": "Gondomar",
+    "LeÃ§a da Palmeira": "Matosinhos", "LeÃ§a do Balio": "Matosinhos",
     "Senhora da Hora": "Matosinhos", "Perafita": "Matosinhos",
-    "São Mamede de Infesta": "Matosinhos", "Santa Cruz do Bispo": "Matosinhos",
-    "Paranhos": "Porto", "Campanhã": "Porto", "Bonfim": "Porto",
+    "SÃ£o Mamede de Infesta": "Matosinhos", "Santa Cruz do Bispo": "Matosinhos",
+    "Paranhos": "Porto", "CampanhÃ£": "Porto", "Bonfim": "Porto",
     "Cedofeita": "Porto", "Massarelos": "Porto", "Lordelo do Ouro": "Porto",
     "Ramalde": "Porto", "Aldoar": "Porto", "Nevogilde": "Porto",
     "Foz do Douro": "Porto", "Antas": "Porto", "Areosa": "Porto",
@@ -74,7 +74,7 @@ def norm_cidade(morada):
                 return v
     return segs[-2].strip() if len(segs) >= 2 else "Porto"
 
-# Carregar place_ids existentes para deduplicação
+# Carregar place_ids existentes para deduplicaÃ§Ã£o
 ids_existentes = set()
 nomes_existentes = set()
 if os.path.exists(CSV_OUT):
@@ -86,7 +86,7 @@ print(f"Leads existentes: {len(nomes_existentes)}")
 
 CAMPOS = ["place_id","nome","categoria","cidade","morada","telefone","rating","avaliacoes","tem_website","website_url"]
 
-# Abrir CSV existente, adicionar place_id se necessário, ou criar novo buffer
+# Abrir CSV existente, adicionar place_id se necessÃ¡rio, ou criar novo buffer
 novos = []
 ALVO_TOTAL = 200
 
@@ -115,7 +115,7 @@ def fetch(queries, lat, lon, r, label, max_pp=20):
                 if not nome:
                     continue
                 website = p.get("websiteUri", "")
-                # Só sem website
+                # SÃ³ sem website
                 if website:
                     continue
                 pid = p.get("id", "")
@@ -167,3 +167,4 @@ f_out.close()
 print(f"\nConcluido: +{total_novos} leads novos")
 print(f"A regenerar CRM...")
 os.system("python fix_crm_v3.py")
+
