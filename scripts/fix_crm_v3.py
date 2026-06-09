@@ -4,7 +4,7 @@ from collections import Counter
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
 CSV_OUT = "porto_leads.csv"
-CRM_HTML = "crm/index.html"
+CRM_HTML = "index.html"
 
 def wa_num(tel):
     d = re.sub(r"\D", "", tel)
@@ -387,7 +387,7 @@ HTML = r"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CRM Porto</title>
+<title>SEO Primeira Página CRM</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -511,6 +511,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',system-ui,sans-
 .s-interessado{border-color:var(--go);color:var(--go);background:#1a140a}
 .s-fechado{border-color:var(--gr);color:var(--gr);background:#0d1a10}
 .s-recusado{border-color:var(--re);color:var(--re);background:#1a0d0d}
+.s-callback{border-color:#FF9A3C;color:#FF9A3C;background:#2a1500}
 .bp{background:transparent;border:1px solid var(--bo);color:var(--mu2);border-radius:6px;padding:5px 9px;font-size:.7rem;cursor:pointer;transition:all .15s;white-space:nowrap}
 .bp:hover,.bp.open{border-color:var(--go);color:var(--go);background:var(--go2)}
 .fu-chip{font-size:.6rem;padding:2px 6px;border-radius:10px;font-weight:600;white-space:nowrap;cursor:default}
@@ -617,8 +618,8 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',system-ui,sans-
 <!-- LOGIN -->
 <div id="lp">
   <div class="lb">
-    <div class="lb-logo">CRM Porto</div>
-    <div class="lb-sub">Acesso Restrito</div>
+    <div class="lb-logo">SEO Primeira Página</div>
+    <div class="lb-sub">CRM — Acesso Restrito</div>
     <input id="li-u" type="text" placeholder="Usuário" autocomplete="username">
     <input id="li-p" type="password" placeholder="Senha" autocomplete="current-password">
     <div id="li-err"></div>
@@ -630,7 +631,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',system-ui,sans-
 <div id="app" style="display:none">
 
 <header class="hd">
-  <div class="hd-logo">CRM Porto <span>Grande Porto</span></div>
+  <div class="hd-logo">SEO Primeira Página <span>CRM Porto</span></div>
   <input class="hd-search" id="sr" placeholder="🔍  Pesquisar nome, categoria ou cidade..." oninput="rnd()">
   <button class="hd-btn" onclick="expN()">Exportar</button>
   <button class="hd-btn" onclick="doLogout()">Sair</button>
@@ -671,6 +672,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',system-ui,sans-
       <div class="ddi on" onclick="sF('s','',this)"><span>Todos</span><span class="ddc" id="cn-all">0</span></div>
       <div class="ddi" onclick="sF('s','novo',this)"><span>🔵 Novos</span><span class="ddc" id="cn-novo">0</span></div>
       <div class="ddi" onclick="sF('s','contactado',this)"><span>📞 Contactados</span><span class="ddc" id="cn-cont">0</span></div>
+      <div class="ddi" onclick="sF('s','callback',this)"><span>🔄 Callback</span><span class="ddc" id="cn-cb">0</span></div>
       <div class="ddi" onclick="sF('s','interessado',this)"><span>⭐ Interessados</span><span class="ddc" id="cn-int">0</span></div>
       <div class="ddi" onclick="sF('s','fechado',this)"><span>✅ Fechados</span><span class="ddc" id="cn-fech">0</span></div>
       <div class="ddi" onclick="sF('s','recusado',this)"><span>❌ Recusados</span><span class="ddc" id="cn-rec">0</span></div>
@@ -795,7 +797,7 @@ function sF(k,v,el){
     else{lbl.textContent='Nicho';bdg.style.display='none';btn.classList.remove('act');}
   }
   if(k==='s'){
-    const lm={'':'Estado','novo':'🔵 Novos','contactado':'📞 Contact.','interessado':'⭐ Interest.','fechado':'✅ Fechados','recusado':'❌ Recusados','followup':'📅 Follow-up'};
+    const lm={'':'Estado','novo':'🔵 Novos','contactado':'📞 Contact.','callback':'🔄 Callback','interessado':'⭐ Interest.','fechado':'✅ Fechados','recusado':'❌ Recusados','followup':'📅 Follow-up'};
     document.getElementById('lbl-s').textContent=lm[v]||'Estado';
     document.getElementById('btn-s').classList.toggle('act',v!=='');
   }
@@ -811,13 +813,13 @@ function rnd(){
     if(F.c&&l.cat!==F.c) return false;
     if(F.ci&&l.cidade!==F.ci) return false;
     if(F.s==='followup'){
-      if(!fu||fu>td) return false;
+      if(!fu) return false;
     } else if(F.s&&st!==F.s) return false;
     if(q&&!l.nome.toLowerCase().includes(q)&&!l.cidade.toLowerCase().includes(q)&&!l.cat.toLowerCase().includes(q)) return false;
     return true;
   });
   // stats (global, not filtered)
-  const c={novo:0,contactado:0,interessado:0,fechado:0,recusado:0};
+  const c={novo:0,contactado:0,callback:0,interessado:0,fechado:0,recusado:0};
   let fuDue=0;
   L.forEach(l=>{
     const st=(s[l.id]?.st)||'novo'; if(c[st]!==undefined) c[st]++;
@@ -833,10 +835,11 @@ function rnd(){
   document.getElementById('cn-all').textContent=FL.length;
   document.getElementById('cn-novo').textContent=FL.filter(l=>(s[l.id]?.st||'novo')==='novo').length;
   document.getElementById('cn-cont').textContent=FL.filter(l=>(s[l.id]?.st)==='contactado').length;
+  document.getElementById('cn-cb').textContent=FL.filter(l=>(s[l.id]?.st)==='callback').length;
   document.getElementById('cn-int').textContent=FL.filter(l=>(s[l.id]?.st)==='interessado').length;
   document.getElementById('cn-fech').textContent=FL.filter(l=>(s[l.id]?.st)==='fechado').length;
   document.getElementById('cn-rec').textContent=FL.filter(l=>(s[l.id]?.st)==='recusado').length;
-  document.getElementById('cn-fu').textContent=L.filter(l=>{const fu=(s[l.id]?.fu)||'';return fu&&fu<=td;}).length;
+  document.getElementById('cn-fu').textContent=L.filter(l=>{const fu=(s[l.id]?.fu)||'';return !!fu;}).length;
   // result bar
   const pct=L.length?(FL.length/L.length*100):0;
   document.getElementById('rc-n').textContent=FL.length;
@@ -883,6 +886,7 @@ function rp(){
         <select class="ss2 s-${st}" onchange="sst(${l.id},this.value)">
           <option value="novo" ${st==='novo'?'selected':''}>Novo</option>
           <option value="contactado" ${st==='contactado'?'selected':''}>Contactado</option>
+          <option value="callback" ${st==='callback'?'selected':''}>🔄 Callback</option>
           <option value="interessado" ${st==='interessado'?'selected':''}>Interessado</option>
           <option value="fechado" ${st==='fechado'?'selected':''}>Fechado</option>
           <option value="recusado" ${st==='recusado'?'selected':''}>Recusado</option>
@@ -1113,7 +1117,7 @@ function addLog(id){
 
 // ── Export ────────────────────────────────────────────────────────────────
 function expN(){
-  const s=ld(); let t='CRM Porto — '+new Date().toLocaleDateString('pt-BR')+'\n\n';
+  const s=ld(); let t='SEO Primeira Página CRM — '+new Date().toLocaleDateString('pt-BR')+'\n\n';
   FL.forEach(l=>{
     const d=s[l.id]; if(!d||(!d.log?.length&&(!d.st||d.st==='novo')&&!d.fu)) return;
     t+=`[${(d.st||'novo').toUpperCase()}] ${l.nome} (${l.cidade}) — ${l.tel||'—'}\n`;
