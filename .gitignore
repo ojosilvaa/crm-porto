@@ -3,3 +3,6 @@ __pycache__/
 *.pyo
 .env
 *.log
+# Dados pessoais — não commitar
+leads_export.csv
+leads_com_tel.csv
